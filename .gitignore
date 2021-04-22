@@ -1,0 +1,6 @@
+*.swp
+tags
+_build
+WORKDIR*
+.clangd
+*NOGIT*
