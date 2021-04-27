@@ -4,8 +4,8 @@
 #include <map>
 #include <osmium/handler.hpp>
 
-#include "Graph/types.h"
-#include "Graph/polygon.h"
+#include "graph/types.h"
+#include "graph/polygon.h"
 
 namespace my::preprocess {
 

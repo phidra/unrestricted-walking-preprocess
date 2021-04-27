@@ -97,7 +97,7 @@ static map<RouteLabel, ParsedRoute> _partitionTripsInRoutes(ad::cppgtfs::gtfs::F
                                                              map<RouteLabel, ParsedRoute> const& partition) {
     // checks that the agregation of the trips of all routes have the same number of trips than feed
     auto nbTripsInFeed = feed.getTrips().size();
-    int nbTripsInPartitions = accumulate(partition.cbegin(), partition.cend(), 0, [](int acc, auto const& routePair) {
+    size_t nbTripsInPartitions = accumulate(partition.cbegin(), partition.cend(), 0, [](size_t acc, auto const& routePair) {
         auto const& route = routePair.second;
         return acc + route.trips.size();
     });

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Graph/types.h"
+#include "graph/types.h"
 
 namespace my {
 

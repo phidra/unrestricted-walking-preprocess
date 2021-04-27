@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Graph/polygon.h"
+#include "graph/polygon.h"
 
 using namespace std;
 

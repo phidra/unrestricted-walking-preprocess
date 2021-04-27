@@ -2,10 +2,10 @@
 #include <fstream>
 #include <string>
 
-#include "MutualizedPreprocess/Graph/graphtypes.h"
-#include "MutualizedPreprocess/Graph/walking_graph.h"
-#include "MutualizedPreprocess/GtfsParsing/gtfs_parsed_data.h"
-#include "MutualizedPreprocess/GtfsParsing/gtfs_geojson.h"
+#include "graph/graphtypes.h"
+#include "graph/walking_graph.h"
+#include "gtfs/gtfs_parsed_data.h"
+#include "gtfs/gtfs_geojson.h"
 
 int main(int argc, char** argv) {
     if (argc < 7) {

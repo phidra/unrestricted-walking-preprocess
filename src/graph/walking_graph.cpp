@@ -2,11 +2,11 @@
 #include <fstream>
 #include <map>
 
-#include "Graph/walking_graph.h"
-#include "Graph/polygonfile.h"
-#include "Graph/extending_with_stops.h"
-#include "Graph/graph.h"
-#include "Graph/geojson.h"
+#include "graph/walking_graph.h"
+#include "graph/polygonfile.h"
+#include "graph/extending_with_stops.h"
+#include "graph/graph.h"
+#include "graph/geojson.h"
 
 using namespace std;
 

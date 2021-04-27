@@ -8,9 +8,9 @@ this_script_parent="$(realpath "$(dirname "$0")" )"
 
 # === Preparing build
 BUILD_DIR="$this_script_parent/_build"
-CMAKE_ROOT_DIR="$this_script_parent/MyCustomUsage"
-SCRIPTS_DIR="$this_script_parent/MyCustomUsage/Scripts"
-DATA_DIR="$this_script_parent/MyCustomUsage/Data"
+CMAKE_ROOT_DIR="$this_script_parent/src"
+SCRIPTS_DIR="$this_script_parent/scripts"
+DATA_DIR="$this_script_parent/data"
 WALKSPEED_KMH=4.7
 echo "BUILD_DIR=$BUILD_DIR"
 echo "CMAKE_ROOT_DIR=$CMAKE_ROOT_DIR"

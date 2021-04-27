@@ -10,8 +10,8 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
 
-#include "Graph/types.h"
-#include "Graph/graphtypes.h"
+#include "graph/types.h"
+#include "graph/graphtypes.h"
 
 namespace my {
 

@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include <rapidjson/istreamwrapper.h>
-#include "Graph/geojson.h"
+#include "graph/geojson.h"
 
 using namespace std;
 
