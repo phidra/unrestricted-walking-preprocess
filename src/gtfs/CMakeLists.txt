@@ -12,5 +12,5 @@ set(GTFSPARSING_SOURCES
 
 add_library(gtfs_parsing STATIC "${GTFSPARSING_SOURCES}")
 target_include_directories(gtfs_parsing PRIVATE "${CPPGTFS_INCLUDE_DIR}")
-target_include_directories(gtfs_parsing PRIVATE "${CONAN_INCLUDE_DIRS_RAPIDJSON}")
+target_include_directories(gtfs_parsing PRIVATE "${RAPIDJSON_INCLUDE_DIR}")
 target_link_libraries(gtfs_parsing PRIVATE ad_cppgtfs)
