@@ -4,7 +4,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 
-#include "Graph/polygonfile.h"
+#include "graph/polygonfile.h"
 
 using namespace std;
 

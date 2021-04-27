@@ -4,8 +4,8 @@
 #include <osmium/handler/node_locations_for_ways.hpp>
 #include <osmium/geom/haversine.hpp>
 
-#include "Graph/osmparsing.h"
-#include "Graph/graph.h"
+#include "graph/osmparsing.h"
+#include "graph/graph.h"
 
 using namespace std;
 

@@ -34,7 +34,7 @@ struct ParsedRoute {
 };
 
 // A ParsedStop stores what is necessary to ultra : name and coordinates.
-// We don't use an external structure (as my::Stop) here, to keep GtfsParsing independent.
+// We don't use an external structure (as my::Stop) here, to keep gtfs module independent.
 struct ParsedStop {
     std::string id;
     std::string name;

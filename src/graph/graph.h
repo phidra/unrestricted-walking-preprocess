@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Graph/graphtypes.h"
-#include "Graph/polygon.h"
+#include "graph/graphtypes.h"
+#include "graph/polygon.h"
 
 namespace my::preprocess {
 

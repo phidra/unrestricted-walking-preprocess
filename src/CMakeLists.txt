@@ -5,9 +5,6 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wunused-parameter")
 
 project(my-custom-ultra-usage)
 
-# ULTRA code is not robust to all warning flags :
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-infinite-recursion -Wno-unused-variable -Wno-sign-compare")
-
 # uncomment (and adapt if necessary) to use iwyu (https://include-what-you-use.org/) :
 # note : there is currently a slight bug in iwyu, that causes unnecessary long paths, such as :
 #       #include "DataStructures/RAPTOR/Entities/../../../Helpers/IO/Serialization.h"
@@ -21,15 +18,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-include(cppgtfs.cmake)
+include(cmake/cppgtfs.cmake)
 
-add_subdirectory(MutualizedPreprocess)
-add_subdirectory(Mains)
+add_subdirectory(gtfs)
+add_subdirectory(graph)
+add_subdirectory(mains)
 
-# NOTE : if needed, also toggle compilation flags used by ULTRA
-# cf. https://github.com/phidra/ULTRA/blob/eed8bb61dc15f2ab306a5ecfd8c24f2b5562e017/Runnables/Makefile#L5
-
-include(download-bordeaux-data-gtfs.cmake)
-include(download-bordeaux-data-osm.cmake)
-include(download-idf-data-gtfs.cmake)
-include(download-idf-data-osm.cmake)
+include(cmake/download-bordeaux-data-gtfs.cmake)
+include(cmake/download-bordeaux-data-osm.cmake)
+include(cmake/download-idf-data-gtfs.cmake)
+include(cmake/download-idf-data-osm.cmake)

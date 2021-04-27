@@ -1,7 +1,7 @@
 #pragma once
 
 #include <istream>
-#include "Graph/polygon.h"
+#include "graph/polygon.h"
 
 namespace my::preprocess {
 
