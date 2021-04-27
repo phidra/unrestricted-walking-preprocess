@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wunused-parameter")
 
-project(my-custom-ultra-usage)
+project(unrestricted-walking-preprocess)
 
 # uncomment (and adapt if necessary) to use iwyu (https://include-what-you-use.org/) :
 # note : there is currently a slight bug in iwyu, that causes unnecessary long paths, such as :
@@ -16,18 +16,18 @@ project(my-custom-ultra-usage)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
-# si on est le projet principal, on inclut conan
-# (sinon, on suppose qu'il sera inclus par l'appelant)
-# if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+# if we are the main project, we use conan to manage dependency to rapidjson
+# otherwise, we expect the caller to set the variable RAPIDJSON_INCLUDE_DIR
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    message(STATUS "Using conan to define RAPIDJSON_INCLUDE_DIR")
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup(TARGETS)
-    message(STATUS "Using conan to define CONAN_INCLUDE_DIRS_RAPIDJSON")
+    set(RAPIDJSON_INCLUDE_DIR "${CONAN_INCLUDE_DIRS_RAPIDJSON}")
 else()
-    message(STATUS "Expecting that caller defines CONAN_INCLUDE_DIRS_RAPIDJSON")
+    message(STATUS "Expecting the caller to define RAPIDJSON_INCLUDE_DIR")
 endif()
 message(STATUS "To include rapidjson, the following variable is used :")
-message(STATUS "CONAN_INCLUDE_DIRS_RAPIDJSON=${CONAN_INCLUDE_DIRS_RAPIDJSON}")
+message(STATUS "RAPIDJSON_INCLUDE_DIR=${RAPIDJSON_INCLUDE_DIR}")
 
 include(cmake/cppgtfs.cmake)
 
