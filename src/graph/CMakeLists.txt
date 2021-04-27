@@ -25,9 +25,7 @@ target_link_libraries(graphlib PRIVATE ad_cppgtfs)
 get_filename_component(GRAPH_PARENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
 target_include_directories(graphlib PUBLIC "${GRAPH_PARENT_DIR}")
 
-# we export the use of conan's rapidjson (to allow users of graphlib to also use rapidjson) :
-target_include_directories(graphlib PUBLIC "${CONAN_INCLUDE_DIRS_RAPIDJSON}")
-
+target_include_directories(graphlib PRIVATE "${CONAN_INCLUDE_DIRS_RAPIDJSON}")
 set(LIBOSMIUM_LINK_DEPS bz2 z expat -pthread)
 target_link_libraries(graphlib PRIVATE "${LIBOSMIUM_LINK_DEPS}")
 

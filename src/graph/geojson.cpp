@@ -207,4 +207,49 @@ vector<Edge> parse_geojson_graph(istream& in) {
     return edges;
 }
 
+void dump_geojson_line(std::ostream& out, BgPolygon::ring_type const& ring) {
+    rapidjson::Document doc(rapidjson::kObjectType);
+    rapidjson::Document::AllocatorType& a = doc.GetAllocator();
+    doc.AddMember("type", "FeatureCollection", a);
+
+    rapidjson::Value features(rapidjson::kArrayType);
+
+    // coordinates :
+    rapidjson::Value coordinates(rapidjson::kArrayType);
+
+    for (auto point = boost::begin(ring); point != boost::end(ring); ++point) {
+        double lng = boost::geometry::get<0>(*point);
+        double lat = boost::geometry::get<1>(*point);
+        rapidjson::Value coords(rapidjson::kArrayType);
+        coords.PushBack(rapidjson::Value(lng), a);
+        coords.PushBack(rapidjson::Value(lat), a);
+        coordinates.PushBack(coords, a);
+    }
+
+    // geometry :
+    rapidjson::Value geometry(rapidjson::kObjectType);
+    geometry.AddMember("coordinates", coordinates, a);
+    geometry.AddMember("type", "LineString", a);
+
+    // properties :
+    rapidjson::Value properties(rapidjson::kObjectType);
+    properties.AddMember("nb_points", rapidjson::Value(boost::geometry::num_points(ring)), a);
+
+    // feature :
+    rapidjson::Value feature(rapidjson::kObjectType);
+    feature.AddMember("type", "Feature", a);
+    feature.AddMember("geometry", geometry, a);
+    feature.AddMember("properties", properties, a);
+    features.PushBack(feature, a);
+
+    doc.AddMember("features", features, a);
+
+    // dumping :
+    rapidjson::OStreamWrapper out_wrapper(out);
+    rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(out_wrapper);
+    doc.Accept(writer);
+
+    out << std::endl;
+}
+
 }  // namespace my
