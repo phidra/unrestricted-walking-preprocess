@@ -1,6 +1,9 @@
 *.swp
 tags
 _build
-WORKDIR*
 .clangd
 *NOGIT*
+
+DOWNLOADED_DATA
+WORKDIR*
+PREPARED_DATA*
