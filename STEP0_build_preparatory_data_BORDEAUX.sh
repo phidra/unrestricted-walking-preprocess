@@ -34,7 +34,8 @@ mkdir -p "$INPUT_GTFS_DATA"
 mkdir -p "$BUILD_DIR"
 conan install --install-folder="$BUILD_DIR" "$CMAKE_ROOT_DIR" --profile="$CMAKE_ROOT_DIR/conanprofile.txt"
 CXX=$(which clang++) cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  -B"$BUILD_DIR" -H"$CMAKE_ROOT_DIR"
-make -j -C "$BUILD_DIR" download_osm_bordeaux build-preparatory
+# make -j -C "$BUILD_DIR" download_osm_bordeaux
+make -j -C "$BUILD_DIR" build-preparatory
 
 
 # === Putting GTFS data in WORKDIR :
