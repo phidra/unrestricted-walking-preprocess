@@ -1,0 +1,14 @@
+# FIXME: this should not be part of the project...
+[settings]
+os=Linux
+os_build=Linux
+arch=x86_64
+arch_build=x86_64
+compiler=clang
+compiler.version=10
+compiler.libcxx=libc++
+build_type=Release
+
+[env]
+CC=/usr/bin/clang
+CXX=/usr/bin/clang++
