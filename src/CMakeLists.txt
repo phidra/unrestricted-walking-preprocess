@@ -15,8 +15,19 @@ project(my-custom-ultra-usage)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+
+# si on est le projet principal, on inclut conan
+# (sinon, on suppose qu'il sera inclus par l'appelant)
+# if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS)
+    message(STATUS "Using conan to define CONAN_INCLUDE_DIRS_RAPIDJSON")
+else()
+    message(STATUS "Expecting that caller defines CONAN_INCLUDE_DIRS_RAPIDJSON")
+endif()
+message(STATUS "To include rapidjson, the following variable is used :")
+message(STATUS "CONAN_INCLUDE_DIRS_RAPIDJSON=${CONAN_INCLUDE_DIRS_RAPIDJSON}")
 
 include(cmake/cppgtfs.cmake)
 
