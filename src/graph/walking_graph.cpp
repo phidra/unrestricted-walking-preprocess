@@ -12,7 +12,8 @@ using namespace std;
 
 namespace uwpreprocess {
 
-void _rank_nodes(vector<uwpreprocess::Edge>& edges_with_stops, vector<uwpreprocess::Stop> const& stops) {
+size_t _rank_nodes(vector<uwpreprocess::Edge>& edges_with_stops, vector<uwpreprocess::Stop> const& stops) {
+    // return the number of nodes (= 1 + the highest rank of the nodes)
     unordered_map<uwpreprocess::NodeId, size_t> node_to_rank;
 
     // some algorithms (ULTRA) require that stops are the first nodes of the graph -> we rank stops first :
@@ -33,6 +34,9 @@ void _rank_nodes(vector<uwpreprocess::Edge>& edges_with_stops, vector<uwpreproce
         rank_that_node(edge.node_from);
         rank_that_node(edge.node_to);
     }
+
+    size_t number_of_nodes = current_rank;  // rank starts at 0, so the number of nodes is highest-rank + 1
+    return number_of_nodes;
 }
 
 vector<uwpreprocess::Edge> _add_reversed_edges(vector<uwpreprocess::Edge> const& edges) {
@@ -52,9 +56,9 @@ vector<uwpreprocess::Edge> _add_reversed_edges(vector<uwpreprocess::Edge> const&
     return bidirectional;
 }
 
-map<size_t, vector<size_t>> _map_nodes_to_out_edges(vector<uwpreprocess::Edge> const& edges) {
+vector<vector<size_t>> _map_nodes_to_out_edges(vector<uwpreprocess::Edge> const& edges, size_t nb_nodes) {
     // this functions build a map that helps to retrieve the out-edges of a node (given its rank)
-    map<size_t, vector<size_t>> node_to_out_edges;
+    vector<vector<size_t>> node_to_out_edges(nb_nodes);
     for (size_t edge_index = 0; edge_index < edges.size(); ++edge_index) {
         auto const& edge = edges[edge_index];
         node_to_out_edges[edge.node_from.get_rank()].push_back(edge_index);
@@ -76,9 +80,9 @@ WalkingGraph::WalkingGraph(filesystem::path osm_file,
     vector<Edge> edges_with_stops;
     tie(edges_with_stops, stops_with_closest_node) = extend_graph(stops, edges_osm, walkspeed_km_per_hour);
 
-    _rank_nodes(edges_with_stops, stops);
+    size_t nb_nodes = _rank_nodes(edges_with_stops, stops);
     edges_with_stops_bidirectional = _add_reversed_edges(edges_with_stops);
-    node_to_out_edges = _map_nodes_to_out_edges(edges_with_stops_bidirectional);
+    node_to_out_edges = _map_nodes_to_out_edges(edges_with_stops_bidirectional, nb_nodes);
     cout << "Number of nodes in the graph = " << node_to_out_edges.size() << endl;
     cout << "Number of edges in the graph = " << edges_with_stops_bidirectional.size() << endl;
     check_structures_consistency();
@@ -97,7 +101,7 @@ void WalkingGraph::check_structures_consistency() const {
     }
 
     set<size_t> nodes2;
-    for (auto& [rank, _] : node_to_out_edges) {
+    for (size_t rank = 0; rank < node_to_out_edges.size(); ++ rank) {
         nodes2.insert(rank);
     }
 

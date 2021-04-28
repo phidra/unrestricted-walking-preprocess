@@ -29,7 +29,7 @@ struct WalkingGraph {
     std::vector<uwpreprocess::Edge> edges_with_stops_bidirectional;
 
     // helper structures :
-    std::map<size_t, std::vector<size_t>> node_to_out_edges;
+    std::vector<std::vector<size_t>> node_to_out_edges;
 
     void check_structures_consistency() const;
 
