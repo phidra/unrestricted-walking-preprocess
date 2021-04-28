@@ -24,8 +24,8 @@ struct WalkingGraph {
 
     WalkingGraph(WalkingGraph&&) = default;
     WalkingGraph() {}
-    //
-    // edges3 = same than edges2, but twice as more because bidirectional :
+
+    // edges in graph OSM + an additional edge for each stops + all edges are duplicated to make them bidirectional :
     std::vector<uwpreprocess::Edge> edges_with_stops_bidirectional;
 
     // helper structures :
