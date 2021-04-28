@@ -36,23 +36,40 @@ int main(int argc, char** argv) {
     std::cout << "OUTPUT_DIR       = " << outputDir << std::endl;
     std::cout << "HL-UW OUTPUT_DIR = " << hluwOutputDir << std::endl;
     std::cout << std::endl;
-    my::preprocess::GtfsParsedData gtfsData{gtfsFolder};
 
-    std::ofstream out_gtfs(outputDir + "gtfs.json");
-    my::preprocess::toStream(out_gtfs, gtfsData);
-    std::ofstream out_stoptimes(hluwOutputDir + "stoptimes.txt");
-    gtfsData.toHluwStoptimes(out_stoptimes);
-
-    // note : this conversion is only necessary so that Graph doesn't depend on GtfsParsing :
+    // gtfs :
     std::vector<my::Stop> stops;
-    for (auto& stop : gtfsData.rankedStops) {
-        stops.emplace_back(stop.longitude, stop.latitude, stop.id, stop.name);
+    {
+        std::cout << "Parsing GTFS folder" << std::endl;
+        my::preprocess::GtfsParsedData gtfsData{gtfsFolder};
+
+        std::cout << "Dumping GTFS as json" << std::endl;
+        std::ofstream out_gtfs(outputDir + "gtfs.json");
+        my::preprocess::toStream(out_gtfs, gtfsData);
+
+        std::cout << "Dumping HL-UW stoptimes" << std::endl;
+        std::ofstream out_stoptimes(hluwOutputDir + "stoptimes.txt");
+        gtfsData.toHluwStoptimes(out_stoptimes);
+
+        // note : this conversion is only necessary so that Graph doesn't depend on GtfsParsing :
+        std::cout << "Converting stops for walking-graph" << std::endl;
+        for (auto& stop : gtfsData.rankedStops) {
+            stops.emplace_back(stop.longitude, stop.latitude, stop.id, stop.name);
+        }
     }
 
+    // walking-graph :
+    std::cout << "Building walking-graph" << std::endl;
     my::preprocess::WalkingGraph graph{osmFile, polygonFile, stops, walkspeedKmPerHour};
+
+    std::cout << "Dumping WalkingGraph for HL-UW" << std::endl;
     std::ofstream out_graph(outputDir + "walking_graph.json");
-    graph.toStream(out_graph);
     graph.toHluwStructures(hluwOutputDir);
+
+    std::cout << "Dumping WalkingGraph geojson" << std::endl;
+    graph.toStream(out_graph);
+
+    std::cout << "All is OK" << std::endl;
 
     return 0;
 }
