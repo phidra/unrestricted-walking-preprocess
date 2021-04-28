@@ -20,7 +20,7 @@ void to_stream(ostream& out, GtfsParsedData const& gtfs_data) {
     for (auto& route : gtfs_data.ranked_routes) {
         ranked_routes_json.PushBack(rapidjson::Value().SetString(route.label.c_str(), a), a);
     }
-    doc.AddMember("rankedRoutes", ranked_routes_json, a);
+    doc.AddMember("ranked_routes", ranked_routes_json, a);
 
     // ranked_stops
     rapidjson::Value ranked_stops_json(rapidjson::kArrayType);
@@ -32,7 +32,7 @@ void to_stream(ostream& out, GtfsParsedData const& gtfs_data) {
         stop.AddMember("name", rapidjson::Value().SetString(parsed_stop.name.c_str(), a), a);
         ranked_stops_json.PushBack(stop, a);
     }
-    doc.AddMember("rankedStops", ranked_stops_json, a);
+    doc.AddMember("ranked_stops", ranked_stops_json, a);
 
     // routes
     // routes are stored in a map that associates a label (key) to trips (value)
@@ -99,10 +99,10 @@ GtfsParsedData from_stream(istream& in) {
     doc.ParseStream(stream_wrapper);
 
     assert_geojson_format(doc.IsObject(), "doc is not an object");
-    assert_geojson_format(doc.HasMember("rankedRoutes"), "doc has no 'ranked_routes'");
+    assert_geojson_format(doc.HasMember("ranked_routes"), "doc has no 'ranked_routes'");
 
     // DESERIALIZATION ranked_routes :
-    auto& ranked_routes_json = doc["rankedRoutes"];
+    auto& ranked_routes_json = doc["ranked_routes"];
     assert_geojson_format(ranked_routes_json.IsArray(), "ranked_routes is not an array");
     vector<RouteLabel> ranked_routes;
     size_t route_rank = 0;
@@ -115,7 +115,7 @@ GtfsParsedData from_stream(istream& in) {
     }
 
     // DESERIALIZATION ranked_stops :
-    auto& ranked_stops_json = doc["rankedStops"];
+    auto& ranked_stops_json = doc["ranked_stops"];
     assert_geojson_format(ranked_stops_json.IsArray(), "ranked_stops is not an array");
     vector<ParsedStop> ranked_stops;
     size_t stop_rank = 0;
