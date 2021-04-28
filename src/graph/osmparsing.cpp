@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 void FillingHandler::way(const osmium::Way& way) noexcept {
     if (!is_way_interesting(way))
@@ -50,7 +50,7 @@ bool is_way_interesting(const osmium::Way& way) {
 
 bool is_way_in_polygon(const osmium::Way& way, const BgPolygon& polygon) {
     // if there is no polygon, consider that all ways are ok :
-    if (my::is_empty(polygon)) {
+    if (uwpreprocess::is_empty(polygon)) {
         return true;
     }
 
@@ -62,4 +62,4 @@ bool is_way_in_polygon(const osmium::Way& way, const BgPolygon& polygon) {
     return is_front_in_polygon || is_back_in_polygon;
 }
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

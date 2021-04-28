@@ -5,9 +5,9 @@
 
 using namespace std;
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
-vector<string> RouteLabel::toStopIds() const {
+vector<string> RouteLabel::to_stop_ids() const {
     // from a given routeLabel, this functions builds back the list of its stop's ids :
     vector<string> stops;
     string token;
@@ -36,4 +36,4 @@ string ParsedStop::as_string() const {
     return oss.str();
 };
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

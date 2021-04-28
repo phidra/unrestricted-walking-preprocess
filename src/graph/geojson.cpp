@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace my {
+namespace uwpreprocess {
 
 void dump_geojson_graph(ostream& out, vector<Edge> const& edges, bool allow_unranked) {
     // EXPECTED OUTPUT :
@@ -255,4 +255,4 @@ void dump_geojson_line(std::ostream& out, BgPolygon::ring_type const& ring) {
     out << std::endl;
 }
 
-}  // namespace my
+}  // namespace uwpreprocess

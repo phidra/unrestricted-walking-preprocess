@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 struct IllFormattedPolygonException : public std::exception {
     IllFormattedPolygonException(string description) : msg{string("Ill-formatted polygon file : ") + description} {}
@@ -112,4 +112,4 @@ BgPolygon get_polygon(string polygonfile_path) {
     return create_polygon(points);
 }
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

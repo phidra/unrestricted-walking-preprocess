@@ -7,7 +7,7 @@
 #include <osmium/osm/location.hpp>
 #include <osmium/osm/types.hpp>
 
-namespace my {
+namespace uwpreprocess {
 
 using NodeOsmId = osmium::object_id_type;
 using WayId = osmium::object_id_type;
@@ -34,4 +34,4 @@ struct StopWithClosestNode : public Stop {
     std::string closest_node_url;
 };
 
-}  // namespace my
+}  // namespace uwpreprocess

@@ -6,7 +6,7 @@
 #include "graph/graphtypes.h"
 #include "graph/polygon.h"
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 struct WalkingGraph {
     // From a set of stops and a given OSM file (+ a possible filtering polygon), computes a walking graph.
@@ -17,45 +17,45 @@ struct WalkingGraph {
     // Each node of the graph is identified by its rank.
     // Nodes representing stops are ranked BEFORE the other nodes (because this is needed by ULTRA).
 
-    WalkingGraph(std::filesystem::path osmFile,
-                 std::filesystem::path polygonFile,
-                 std::vector<my::Stop> const& stops,
-                 float walkspeedKmPerHour_);
+    WalkingGraph(std::filesystem::path osm_file,
+                 std::filesystem::path polygon_file,
+                 std::vector<uwpreprocess::Stop> const& stops,
+                 float walkspeed_km_per_hour_);
 
     WalkingGraph(WalkingGraph&&) = default;
     WalkingGraph() {}
     //
     // edges3 = same than edges2, but twice as more because bidirectional :
-    std::vector<my::Edge> edgesWithStopsBidirectional;
+    std::vector<uwpreprocess::Edge> edges_with_stops_bidirectional;
 
     // helper structures :
-    std::map<size_t, std::vector<size_t>> nodeToOutEdges;
+    std::map<size_t, std::vector<size_t>> node_to_out_edges;
 
     // this dump helper is currently used to check non-regression (output must be binary iso)
     // later, we can remove it or replace it with proper tests, but for now it is useful
-    void dumpIntermediary(std::string const& outputDir) const;
+    void dump_intermediary(std::string const& output_dir) const;
 
-    void printStats(std::ostream& out) const;
+    void print_stats(std::ostream& out) const;
 
-    void checkStructuresConsistency() const;
+    void check_structures_consistency() const;
 
     // serialization/deserialization :
-    void toStream(std::ostream& out) const;
-    static WalkingGraph fromStream(std::istream& in);
-    void toHluwStructures(std::string const& hluwOutputDir) const;  // FIXME : this should be in HL-UW repo
+    void to_stream(std::ostream& out) const;
+    static WalkingGraph from_stream(std::istream& in);
+    void to_hluw_structures(std::string const& hluw_output_dir) const;  // FIXME : this should be in HL-UW repo
 
    private:
-    float walkspeedKmPerHour;
-    my::BgPolygon polygon;
+    float walkspeed_km_per_hour;
+    uwpreprocess::BgPolygon polygon;
 
     // edges1 = those are the "initial" edges, in the OSM graph :
-    std::vector<my::Edge> edgesOsm;
+    std::vector<uwpreprocess::Edge> edges_osm;
 
     // edges2 = those are the edges "augmented" with an edge between each stop and its closest initial node :
-    std::vector<my::Edge> edgesWithStops;
+    std::vector<uwpreprocess::Edge> edges_with_stops;
 
     // those are the stops passed as parameters, augmented with their closest node in the OSM graph :
-    std::vector<my::StopWithClosestNode> stopsWithClosestNode;
+    std::vector<uwpreprocess::StopWithClosestNode> stops_with_closest_node;
 };
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

@@ -25,7 +25,7 @@
 // Thus, one of the main purpose of GtfsParsedData is to build "scientific" routes from GTFS feed.
 // BEWARE : the "routes" returned by cppgtfs are not the scientific ones, and they are NOT further used !
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 struct GtfsParsedData {
     GtfsParsedData(std::string const& gtfsFolder);
@@ -38,23 +38,23 @@ struct GtfsParsedData {
     // this rank will be used to store the stops/routes in a vector
     // the following conversion structures allow to convert between rank and label/id :
 
-    //   - rankedRoutes associates a rank to a route
-    //   - routeToRank allows to retrieve the rank of a given route
-    std::vector<RouteLabel> rankedRoutes;
-    std::unordered_map<RouteLabel, size_t> routeToRank;
+    //   - ranked_routes associates a rank to a route
+    //   - route_to_rank allows to retrieve the rank of a given route
+    std::vector<RouteLabel> ranked_routes;
+    std::unordered_map<RouteLabel, size_t> route_to_rank;
 
-    //   - rankedStops associates a rank to a stop
-    //   - stopidToRank allows to retrieve the rank of a given stop
-    std::vector<ParsedStop> rankedStops;
-    std::unordered_map<std::string, size_t> stopidToRank;
+    //   - ranked_stops associates a rank to a stop
+    //   - stopid_to_rank allows to retrieve the rank of a given stop
+    std::vector<ParsedStop> ranked_stops;
+    std::unordered_map<std::string, size_t> stopid_to_rank;
 
     // serialization/deserialization :
-    void toHluwStoptimes(std::ostream& out) const;  // FIXME : this should be in HL-UW repo
+    void to_hluw_stoptimes(std::ostream& out) const;  // FIXME : this should be in HL-UW repo
 
     inline bool operator==(GtfsParsedData const& other) const {
-        return (rankedRoutes == other.rankedRoutes && routeToRank == other.routeToRank &&
-                rankedStops == other.rankedStops && stopidToRank == other.stopidToRank && routes == other.routes);
+        return (ranked_routes == other.ranked_routes && route_to_rank == other.route_to_rank &&
+                ranked_stops == other.ranked_stops && stopid_to_rank == other.stopid_to_rank && routes == other.routes);
     }
 };
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

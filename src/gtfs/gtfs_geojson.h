@@ -5,11 +5,11 @@
 
 #include "gtfs_parsed_data.h"
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
-void toStream(std::ostream& out, GtfsParsedData const&);
-GtfsParsedData fromStream(std::istream& in);
+void to_stream(std::ostream& out, GtfsParsedData const&);
+GtfsParsedData from_stream(std::istream& in);
 
-bool _checkSerializationIdempotent(GtfsParsedData const&);
+bool _check_serialization_idempotent(GtfsParsedData const&);
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

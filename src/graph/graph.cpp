@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 float geometry_length_in_meters(Polyline const& geometry) {
     // precondition = polyline has at least 2 points
@@ -119,4 +119,4 @@ vector<Edge> osm_to_graph(string osmfile, BgPolygon polygon, float walkspeed_km_
     return edges;
 }
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

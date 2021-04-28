@@ -7,7 +7,7 @@
 #include "graph/types.h"
 #include "graph/polygon.h"
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 static BgPolygon DEFAULT_POLYGON{};  // by default = no polygon
 
@@ -23,4 +23,4 @@ struct FillingHandler : public osmium::handler::Handler {
 bool is_way_interesting(const osmium::Way& way);
 bool is_way_in_polygon(const osmium::Way& way, const BgPolygon& polygon);
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess
