@@ -67,9 +67,13 @@ WalkingGraph::WalkingGraph(filesystem::path osm_file,
                            vector<uwpreprocess::Stop> const& stops,
                            float walkspeed_km_per_hour_)
     : walkspeed_km_per_hour{walkspeed_km_per_hour_},
-      polygon{get_polygon(polygon_file)},
-      edges_osm{osm_to_graph(osm_file, polygon, walkspeed_km_per_hour)} {
-    // extend graph with stop-edges :
+      polygon{get_polygon(polygon_file)} {
+
+    // those are the original edges (the edges in the OSM data): 
+    auto edges_osm = osm_to_graph(osm_file, polygon, walkspeed_km_per_hour);
+
+    // those edges are the edges "augmented" with an edge between each stop and its closest original node :
+    vector<Edge> edges_with_stops;
     tie(edges_with_stops, stops_with_closest_node) = extend_graph(stops, edges_osm, walkspeed_km_per_hour);
 
     _rank_nodes(edges_with_stops, stops);
@@ -80,25 +84,6 @@ WalkingGraph::WalkingGraph(filesystem::path osm_file,
     check_structures_consistency();
 }
 
-void WalkingGraph::dump_intermediary(string const& output_dir) const {
-    ofstream original_graph_stream(output_dir + "original_graph.geojson");
-    uwpreprocess::dump_geojson_graph(original_graph_stream, edges_osm, true);
-
-    ofstream extended_graph_stream(output_dir + "graph_with_stops.geojson");
-    uwpreprocess::dump_geojson_graph(extended_graph_stream, edges_with_stops, true);
-
-    ofstream stops_stream(output_dir + "stops.geojson");
-    uwpreprocess::dump_geojson_stops(stops_stream, stops_with_closest_node);
-
-    ofstream polygon_stream(output_dir + "polygon.geojson");
-    uwpreprocess::dump_geojson_line(polygon_stream, polygon.outer());
-}
-
-void WalkingGraph::print_stats(ostream& out) const {
-    out << "Number of edges in original graph : " << this->edges_osm.size() << endl;
-    out << "nb edges (including added stops) = " << this->edges_with_stops.size() << endl;
-    out << "nb stops = " << this->stops_with_closest_node.size() << endl;
-}
 
 void WalkingGraph::check_structures_consistency() const {
     // check structures consistency :
