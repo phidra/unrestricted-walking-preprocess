@@ -4,7 +4,7 @@
 
 using namespace std;
 
-namespace my {
+namespace uwpreprocess {
 
 BgPolygon create_polygon(vector<pair<double, double>> const& points) {
     // precondition = points must be defined counter-clockwise
@@ -28,4 +28,4 @@ bool is_empty(BgPolygon const& polygon) {
     return polygon.outer().empty();
 }
 
-}  // namespace my
+}  // namespace uwpreprocess

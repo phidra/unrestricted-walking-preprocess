@@ -10,36 +10,36 @@
 
 using namespace std;
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
-void _rankNodes(vector<my::Edge>& edgesWithStops, vector<my::Stop> const& stops) {
-    unordered_map<my::NodeId, size_t> nodeToRank;
+void _rank_nodes(vector<uwpreprocess::Edge>& edges_with_stops, vector<uwpreprocess::Stop> const& stops) {
+    unordered_map<uwpreprocess::NodeId, size_t> node_to_rank;
 
     // some algorithms (ULTRA) require that stops are the first nodes of the graph -> we rank stops first :
     size_t current_rank = 0;
-    for_each(stops.cbegin(), stops.cend(), [&nodeToRank, &current_rank](my::Stop const& stop) {
-        nodeToRank.insert({stop.id, current_rank++});
+    for_each(stops.cbegin(), stops.cend(), [&node_to_rank, &current_rank](uwpreprocess::Stop const& stop) {
+        node_to_rank.insert({stop.id, current_rank++});
     });
 
-    auto rankThatNode = [&nodeToRank, &current_rank](auto& node) {
-        if (nodeToRank.find(node.id) == nodeToRank.end()) {
-            nodeToRank.insert({node.id, current_rank++});
+    auto rank_that_node = [&node_to_rank, &current_rank](auto& node) {
+        if (node_to_rank.find(node.id) == node_to_rank.end()) {
+            node_to_rank.insert({node.id, current_rank++});
         }
-        node.set_rank(nodeToRank.at(node.id));
+        node.set_rank(node_to_rank.at(node.id));
     };
 
     // then we can rank the other nodes in the graph :
-    for (auto& edge : edgesWithStops) {
-        rankThatNode(edge.node_from);
-        rankThatNode(edge.node_to);
+    for (auto& edge : edges_with_stops) {
+        rank_that_node(edge.node_from);
+        rank_that_node(edge.node_to);
     }
 }
 
-vector<my::Edge> _makeEdgesBidirectional(vector<my::Edge> const& edges) {
-    // For each edge, adds its opposite edge (this doubles the number of edges in the edgelist)
+vector<uwpreprocess::Edge> _add_reversed_edges(vector<uwpreprocess::Edge> const& edges) {
+    // For each edge, adds its reversed edge (this doubles the number of edges in the edgelist)
     // note : if performance issues arise, the function would be faster with side-effects (mutating the edges)
     // it is kept as is for now, as it is cleaner.
-    vector<my::Edge> bidirectional(edges);
+    vector<uwpreprocess::Edge> bidirectional(edges);
     for (auto edge : edges) {
         Polyline reversed_geom = edge.geometry;
         reverse(reversed_geom.begin(), reversed_geom.end());
@@ -52,121 +52,121 @@ vector<my::Edge> _makeEdgesBidirectional(vector<my::Edge> const& edges) {
     return bidirectional;
 }
 
-map<size_t, vector<size_t>> _mapNodesToOutEdges(vector<my::Edge> const& edges) {
+map<size_t, vector<size_t>> _map_nodes_to_out_edges(vector<uwpreprocess::Edge> const& edges) {
     // this functions build a map that helps to retrieve the out-edges of a node (given its rank)
-    map<size_t, vector<size_t>> nodeToOutEdges;
+    map<size_t, vector<size_t>> node_to_out_edges;
     for (size_t edge_index = 0; edge_index < edges.size(); ++edge_index) {
         auto const& edge = edges[edge_index];
-        nodeToOutEdges[edge.node_from.get_rank()].push_back(edge_index);
+        node_to_out_edges[edge.node_from.get_rank()].push_back(edge_index);
     }
-    return nodeToOutEdges;
+    return node_to_out_edges;
 }
 
-WalkingGraph::WalkingGraph(filesystem::path osmFile,
-                           filesystem::path polygonFile,
-                           vector<my::Stop> const& stops,
-                           float walkspeedKmPerHour_)
-    : walkspeedKmPerHour{walkspeedKmPerHour_},
-      polygon{get_polygon(polygonFile)},
-      edgesOsm{osm_to_graph(osmFile, polygon, walkspeedKmPerHour)} {
+WalkingGraph::WalkingGraph(filesystem::path osm_file,
+                           filesystem::path polygon_file,
+                           vector<uwpreprocess::Stop> const& stops,
+                           float walkspeed_km_per_hour_)
+    : walkspeed_km_per_hour{walkspeed_km_per_hour_},
+      polygon{get_polygon(polygon_file)},
+      edges_osm{osm_to_graph(osm_file, polygon, walkspeed_km_per_hour)} {
     // extend graph with stop-edges :
-    tie(edgesWithStops, stopsWithClosestNode) = extend_graph(stops, edgesOsm, walkspeedKmPerHour);
+    tie(edges_with_stops, stops_with_closest_node) = extend_graph(stops, edges_osm, walkspeed_km_per_hour);
 
-    _rankNodes(edgesWithStops, stops);
-    edgesWithStopsBidirectional = _makeEdgesBidirectional(edgesWithStops);
-    nodeToOutEdges = _mapNodesToOutEdges(edgesWithStopsBidirectional);
-    cout << "Number of nodes in the graph = " << nodeToOutEdges.size() << endl;
-    cout << "Number of edges in the graph = " << edgesWithStopsBidirectional.size() << endl;
-    checkStructuresConsistency();
+    _rank_nodes(edges_with_stops, stops);
+    edges_with_stops_bidirectional = _add_reversed_edges(edges_with_stops);
+    node_to_out_edges = _map_nodes_to_out_edges(edges_with_stops_bidirectional);
+    cout << "Number of nodes in the graph = " << node_to_out_edges.size() << endl;
+    cout << "Number of edges in the graph = " << edges_with_stops_bidirectional.size() << endl;
+    check_structures_consistency();
 }
 
-void WalkingGraph::dumpIntermediary(string const& outputDir) const {
-    ofstream originalGraphStream(outputDir + "original_graph.geojson");
-    my::dump_geojson_graph(originalGraphStream, edgesOsm, true);
+void WalkingGraph::dump_intermediary(string const& output_dir) const {
+    ofstream original_graph_stream(output_dir + "original_graph.geojson");
+    uwpreprocess::dump_geojson_graph(original_graph_stream, edges_osm, true);
 
-    ofstream extendedGraphStream(outputDir + "graph_with_stops.geojson");
-    my::dump_geojson_graph(extendedGraphStream, edgesWithStops, true);
+    ofstream extended_graph_stream(output_dir + "graph_with_stops.geojson");
+    uwpreprocess::dump_geojson_graph(extended_graph_stream, edges_with_stops, true);
 
-    ofstream stopsStream(outputDir + "stops.geojson");
-    my::dump_geojson_stops(stopsStream, stopsWithClosestNode);
+    ofstream stops_stream(output_dir + "stops.geojson");
+    uwpreprocess::dump_geojson_stops(stops_stream, stops_with_closest_node);
 
-    ofstream polygonStream(outputDir + "polygon.geojson");
-    my::dump_geojson_line(polygonStream, polygon.outer());
+    ofstream polygon_stream(output_dir + "polygon.geojson");
+    uwpreprocess::dump_geojson_line(polygon_stream, polygon.outer());
 }
 
-void WalkingGraph::printStats(ostream& out) const {
-    out << "Number of edges in original graph : " << this->edgesOsm.size() << endl;
-    out << "nb edges (including added stops) = " << this->edgesWithStops.size() << endl;
-    out << "nb stops = " << this->stopsWithClosestNode.size() << endl;
+void WalkingGraph::print_stats(ostream& out) const {
+    out << "Number of edges in original graph : " << this->edges_osm.size() << endl;
+    out << "nb edges (including added stops) = " << this->edges_with_stops.size() << endl;
+    out << "nb stops = " << this->stops_with_closest_node.size() << endl;
 }
 
-void WalkingGraph::checkStructuresConsistency() const {
+void WalkingGraph::check_structures_consistency() const {
     // check structures consistency :
     //  - each node in the node-structure are used in at least one edge
     //  - each edge's extremities in the edge-structure exists in the node-strcture
     // FIXME : this should be used in debug settings only.
     set<size_t> nodes1;
-    for (auto& edge : edgesWithStopsBidirectional) {
+    for (auto& edge : edges_with_stops_bidirectional) {
         nodes1.insert(edge.node_from.get_rank());
         nodes1.insert(edge.node_to.get_rank());
     }
 
     set<size_t> nodes2;
-    for (auto& [rank, _] : nodeToOutEdges) {
+    for (auto& [rank, _] : node_to_out_edges) {
         nodes2.insert(rank);
     }
 
     if (nodes1 != nodes2) {
         cout << "ERROR : structures inconsistency :" << endl;
         cout << "nodes1 (used in vector<Edge>) is of size = " << nodes1.size() << endl;
-        cout << "nodes2 (used in nodeToOutEdges) is of size = " << nodes2.size() << endl;
+        cout << "nodes2 (used in node_to_out_edges) is of size = " << nodes2.size() << endl;
         exit(1);
     }
 }
 
-void WalkingGraph::toStream(ostream& out) const {
-    dump_geojson_graph(out, edgesWithStopsBidirectional, false);
+void WalkingGraph::to_stream(ostream& out) const {
+    dump_geojson_graph(out, edges_with_stops_bidirectional, false);
 }
 
-void WalkingGraph::toHluwStructures(std::string const& hluwOutputDir) const {
+void WalkingGraph::to_hluw_structures(std::string const& hluw_output_dir) const {
     // this functions dumps the structures used by HL-UW.
     // FIXME : it should rather be in HL-UW repository (but for now, it is easier to have it there).
 
     // walkspeed :
-    std::ofstream out_walkspeed(hluwOutputDir + "walkspeed_km_per_hour.txt");
-    out_walkspeed << walkspeedKmPerHour << "\n";
+    std::ofstream out_walkspeed(hluw_output_dir + "walkspeed_km_per_hour.txt");
+    out_walkspeed << walkspeed_km_per_hour << "\n";
 
     // edges :
-    std::ofstream out_edges(hluwOutputDir + "graph.edgefile");
+    std::ofstream out_edges(hluw_output_dir + "graph.edgefile");
     out_edges << std::fixed << std::setprecision(0);  // displays integer weight
-    for (auto& edge : edgesWithStopsBidirectional) {
+    for (auto& edge : edges_with_stops_bidirectional) {
         out_edges << edge.node_from.id << " ";
         out_edges << edge.node_to.id << " ";
         out_edges << edge.weight << "\n";
     }
 
     // nodes :
-    std::ofstream out_nodes(hluwOutputDir + "stops.nodes");
-    for (auto& stop : stopsWithClosestNode) {
+    std::ofstream out_nodes(hluw_output_dir + "stops.nodes");
+    for (auto& stop : stops_with_closest_node) {
         out_nodes << stop.id << "\n";
     }
 
     // stops geojson (used by the HL-UW server) :
-    std::ofstream out_stops(hluwOutputDir + "stops.geojson");
-    dump_geojson_stops(out_stops, stopsWithClosestNode);
+    std::ofstream out_stops(hluw_output_dir + "stops.geojson");
+    dump_geojson_stops(out_stops, stops_with_closest_node);
 }
 
-WalkingGraph WalkingGraph::fromStream(istream& in) {
+WalkingGraph WalkingGraph::from_stream(istream& in) {
     WalkingGraph deserialized;
-    deserialized.edgesWithStopsBidirectional = parse_geojson_graph(in);
+    deserialized.edges_with_stops_bidirectional = parse_geojson_graph(in);
 
-    map<size_t, vector<size_t>> nodeToOutEdges;
+    map<size_t, vector<size_t>> node_to_out_edges;
     size_t edge_rank = 0;
-    for (auto& edge : deserialized.edgesWithStopsBidirectional) {
-        deserialized.nodeToOutEdges[edge.node_from.get_rank()].push_back(edge_rank++);
+    for (auto& edge : deserialized.edges_with_stops_bidirectional) {
+        deserialized.node_to_out_edges[edge.node_from.get_rank()].push_back(edge_rank++);
     }
-    deserialized.checkStructuresConsistency();
+    deserialized.check_structures_consistency();
     return deserialized;
 }
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess

@@ -4,7 +4,7 @@
 
 #include "graph/types.h"
 
-namespace my {
+namespace uwpreprocess {
 
 inline std::string node_url(NodeOsmId id) {
     return std::string("https://www.openstreetmap.org/node/") + std::to_string(id);
@@ -89,4 +89,4 @@ struct Edge {
     Polyline geometry;
 };
 
-}  // namespace my
+}  // namespace uwpreprocess

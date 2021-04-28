@@ -10,11 +10,11 @@
 #include "graph/polygon.h"
 #include "graph/graphtypes.h"
 
-namespace my {
+namespace uwpreprocess {
 
 void dump_geojson_graph(std::ostream& out, std::vector<Edge> const& edges, bool allow_unranked);
 void dump_geojson_stops(std::ostream& out, std::vector<StopWithClosestNode> const& stops);
 std::vector<Edge> parse_geojson_graph(std::istream& in);
 void dump_geojson_line(std::ostream& out, BgPolygon::ring_type const&);
 
-}  // namespace my
+}  // namespace uwpreprocess

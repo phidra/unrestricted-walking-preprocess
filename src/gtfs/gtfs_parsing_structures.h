@@ -5,7 +5,7 @@
 
 // this module defines the structures used to store GTFS data after parsing.
 
-namespace my::preprocess {
+namespace uwpreprocess {
 
 // amongst the trips of a given route, we want to order trips by their departure time
 // to achieve that, we use a std::pair, as the pair will compare using its left element :
@@ -16,7 +16,7 @@ using OrderableTripId = std::pair<TripEventTime, std::string>;
 struct RouteLabel {
     RouteLabel() = default;
     RouteLabel(std::string const& label_) : label{label_} {}
-    std::vector<std::string> toStopIds() const;
+    std::vector<std::string> to_stop_ids() const;
     operator std::string() const { return label; }
     bool operator<(std::string const& other) const { return label < other; }
     bool operator==(std::string const& other) const { return label == other; }
@@ -34,7 +34,7 @@ struct ParsedRoute {
 };
 
 // A ParsedStop stores what is necessary to ultra : name and coordinates.
-// We don't use an external structure (as my::Stop) here, to keep gtfs module independent.
+// We don't use an external structure (as uwpreprocess::Stop) here, to keep gtfs module independent.
 struct ParsedStop {
     std::string id;
     std::string name;
@@ -42,22 +42,22 @@ struct ParsedStop {
     double longitude;
 
     ParsedStop(std::string const& id_, std::string const& name_, double latitude_, double longitude_);
-    static inline bool approxEqual(double left, double right, double epsilon = 1e-9) {
+    static inline bool approx_equal(double left, double right, double epsilon = 1e-9) {
         return std::abs(left - right) < epsilon;
     }
     bool operator==(ParsedStop const& x) const {
-        return id == x.id && name == x.name && approxEqual(longitude, x.longitude) && approxEqual(latitude, x.latitude);
+        return id == x.id && name == x.name && approx_equal(longitude, x.longitude) && approx_equal(latitude, x.latitude);
     }
     std::string as_string() const;
 };
 
-}  // namespace my::preprocess
+}  // namespace uwpreprocess
 
 namespace std {
 
 template <>
-struct hash<my::preprocess::RouteLabel> {
-    size_t operator()(my::preprocess::RouteLabel const& x) const { return hash<string>()(x.label); }
+struct hash<uwpreprocess::RouteLabel> {
+    size_t operator()(uwpreprocess::RouteLabel const& x) const { return hash<string>()(x.label); }
 };
 
 }  // namespace std
