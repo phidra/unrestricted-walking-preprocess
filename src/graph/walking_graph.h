@@ -31,12 +31,6 @@ struct WalkingGraph {
     // helper structures :
     std::map<size_t, std::vector<size_t>> node_to_out_edges;
 
-    // this dump helper is currently used to check non-regression (output must be binary iso)
-    // later, we can remove it or replace it with proper tests, but for now it is useful
-    void dump_intermediary(std::string const& output_dir) const;
-
-    void print_stats(std::ostream& out) const;
-
     void check_structures_consistency() const;
 
     // serialization/deserialization :
@@ -47,12 +41,6 @@ struct WalkingGraph {
    private:
     float walkspeed_km_per_hour;
     uwpreprocess::BgPolygon polygon;
-
-    // edges1 = those are the "initial" edges, in the OSM graph :
-    std::vector<uwpreprocess::Edge> edges_osm;
-
-    // edges2 = those are the edges "augmented" with an edge between each stop and its closest initial node :
-    std::vector<uwpreprocess::Edge> edges_with_stops;
 
     // those are the stops passed as parameters, augmented with their closest node in the OSM graph :
     std::vector<uwpreprocess::StopWithClosestNode> stops_with_closest_node;
