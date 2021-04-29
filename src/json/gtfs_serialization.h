@@ -7,7 +7,7 @@
 
 namespace uwpreprocess::json {
 
-void serialize_gtfs(std::ostream& out, GtfsParsedData const&);
+void serialize_gtfs(GtfsParsedData const&, std::ostream&);
 GtfsParsedData unserialize_gtfs(std::istream& in);
 
 bool _check_serialization_idempotent(GtfsParsedData const&);

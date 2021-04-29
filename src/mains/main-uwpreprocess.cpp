@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
         std::cout << "Dumping GTFS as json" << std::endl;
         std::ofstream out_gtfs(output_dir + "gtfs.json");
-        uwpreprocess::json::serialize_gtfs(out_gtfs, gtfs_data);
+        uwpreprocess::json::serialize_gtfs(gtfs_data, out_gtfs);
 
         std::cout << "Dumping HL-UW stoptimes" << std::endl;
         std::ofstream out_stoptimes(hluw_output_dir + "stoptimes.txt");

@@ -11,7 +11,7 @@ using namespace std;
 
 namespace uwpreprocess::json {
 
-void serialize_gtfs(ostream& out, GtfsParsedData const& gtfs_data) {
+void serialize_gtfs(GtfsParsedData const& gtfs_data, ostream& out) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
 
@@ -207,7 +207,7 @@ GtfsParsedData unserialize_gtfs(istream& in) {
 
 bool _check_serialization_idempotent(GtfsParsedData const& gtfs) {
     ostringstream oss;
-    serialize_gtfs(oss, gtfs);
+    serialize_gtfs(gtfs, oss);
 
     istringstream iss(oss.str());
     GtfsParsedData deserialized = unserialize_gtfs(iss);
