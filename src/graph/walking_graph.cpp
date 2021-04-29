@@ -3,10 +3,8 @@
 #include <map>
 
 #include "graph/walking_graph.h"
-#include "graph/polygonfile.h"
 #include "graph/extending_with_stops.h"
 #include "graph/graph.h"
-#include "graph/geojson.h"
 
 using namespace std;
 
@@ -67,11 +65,11 @@ vector<vector<size_t>> _map_nodes_to_out_edges(vector<uwpreprocess::Edge> const&
 }
 
 WalkingGraph::WalkingGraph(filesystem::path osm_file,
-                           filesystem::path polygon_file,
+                           BgPolygon polygon_,
                            vector<uwpreprocess::Stop> const& stops,
                            float walkspeed_km_per_hour_)
     : walkspeed_km_per_hour{walkspeed_km_per_hour_},
-      polygon{get_polygon(polygon_file)} {
+      polygon{polygon_} {
 
     // those are the original edges (the edges in the OSM data): 
     auto edges_osm = osm_to_graph(osm_file, polygon, walkspeed_km_per_hour);
@@ -111,51 +109,6 @@ void WalkingGraph::check_structures_consistency() const {
         cout << "nodes2 (used in node_to_out_edges) is of size = " << nodes2.size() << endl;
         exit(1);
     }
-}
-
-void WalkingGraph::to_stream(ostream& out) const {
-    dump_geojson_graph(out, edges_with_stops_bidirectional, false);
-}
-
-void WalkingGraph::to_hluw_structures(std::string const& hluw_output_dir) const {
-    // this functions dumps the structures used by HL-UW.
-    // FIXME : it should rather be in HL-UW repository (but for now, it is easier to have it there).
-
-    // walkspeed :
-    std::ofstream out_walkspeed(hluw_output_dir + "walkspeed_km_per_hour.txt");
-    out_walkspeed << walkspeed_km_per_hour << "\n";
-
-    // edges :
-    std::ofstream out_edges(hluw_output_dir + "graph.edgefile");
-    out_edges << std::fixed << std::setprecision(0);  // displays integer weight
-    for (auto& edge : edges_with_stops_bidirectional) {
-        out_edges << edge.node_from.id << " ";
-        out_edges << edge.node_to.id << " ";
-        out_edges << edge.weight << "\n";
-    }
-
-    // nodes :
-    std::ofstream out_nodes(hluw_output_dir + "stops.nodes");
-    for (auto& stop : stops_with_closest_node) {
-        out_nodes << stop.id << "\n";
-    }
-
-    // stops geojson (used by the HL-UW server) :
-    std::ofstream out_stops(hluw_output_dir + "stops.geojson");
-    dump_geojson_stops(out_stops, stops_with_closest_node);
-}
-
-WalkingGraph WalkingGraph::from_stream(istream& in) {
-    WalkingGraph deserialized;
-    deserialized.edges_with_stops_bidirectional = parse_geojson_graph(in);
-
-    map<size_t, vector<size_t>> node_to_out_edges;
-    size_t edge_rank = 0;
-    for (auto& edge : deserialized.edges_with_stops_bidirectional) {
-        deserialized.node_to_out_edges[edge.node_from.get_rank()].push_back(edge_rank++);
-    }
-    deserialized.check_structures_consistency();
-    return deserialized;
 }
 
 }  // namespace uwpreprocess

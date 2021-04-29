@@ -1,14 +1,15 @@
+#include "polygon_serialization.h"
+
 #include <iostream>
 #include <fstream>
 
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 
-#include "graph/polygonfile.h"
 
 using namespace std;
 
-namespace uwpreprocess {
+namespace uwpreprocess::json {
 
 struct IllFormattedPolygonException : public std::exception {
     IllFormattedPolygonException(string description) : msg{string("Ill-formatted polygon file : ") + description} {}
@@ -96,7 +97,7 @@ static vector<pair<double, double>> parse_polygonfile(istream& polygonfile_strea
     return points;
 }
 
-BgPolygon get_polygon(string polygonfile_path) {
+BgPolygon unserialize_polygon(string polygonfile_path) {
     // explicitly returning an empty polygon :
     if (polygonfile_path == NO_POLYGON) {
         cerr << "WARNING : no filtering by polygon will be used." << endl;

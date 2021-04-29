@@ -1,4 +1,4 @@
-#include "gtfs_geojson.h"
+#include "gtfs_serialization.h"
 
 #include <fstream>
 #include <sstream>
@@ -9,9 +9,9 @@
 
 using namespace std;
 
-namespace uwpreprocess {
+namespace uwpreprocess::json {
 
-void to_stream(ostream& out, GtfsParsedData const& gtfs_data) {
+void serialize_gtfs(ostream& out, GtfsParsedData const& gtfs_data) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
 
@@ -93,7 +93,7 @@ static void assert_geojson_format(bool condition, string description) {
         throw IllFormattedGtfsDataException{description};
 }
 
-GtfsParsedData from_stream(istream& in) {
+GtfsParsedData unserialize_gtfs(istream& in) {
     rapidjson::IStreamWrapper stream_wrapper(in);
     rapidjson::Document doc;
     doc.ParseStream(stream_wrapper);
@@ -208,10 +208,10 @@ GtfsParsedData from_stream(istream& in) {
 bool _check_serialization_idempotent(GtfsParsedData const& gtfs) {
     // serializing in a temporary file :
     ostringstream oss;
-    to_stream(oss, gtfs);
+    serialize_gtfs(oss, gtfs);
 
     istringstream iss(oss.str());
-    GtfsParsedData deserialized = from_stream(iss);
+    GtfsParsedData deserialized = unserialize_gtfs(iss);
     return deserialized == gtfs;
 }
 

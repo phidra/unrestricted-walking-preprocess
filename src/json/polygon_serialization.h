@@ -3,10 +3,10 @@
 #include <istream>
 #include "graph/polygon.h"
 
-namespace uwpreprocess {
+namespace uwpreprocess::json {
 
 static const std::string NO_POLYGON = "NONE";
 
-BgPolygon get_polygon(std::string polygonfile_path);
+BgPolygon unserialize_polygon(std::string polygonfile_path);
 
 }  // namespace uwpreprocess
