@@ -35,7 +35,7 @@ mkdir -p "$BUILD_DIR"
 conan install --install-folder="$BUILD_DIR" "$CMAKE_ROOT_DIR" --profile="$CMAKE_ROOT_DIR/conanprofile.txt"
 CXX=$(which clang++) cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  -B"$BUILD_DIR" -H"$CMAKE_ROOT_DIR"
 # make -j -C "$BUILD_DIR" download_osm_bordeaux
-make -j -C "$BUILD_DIR" build-preparatory
+make -j -C "$BUILD_DIR" bin-uwpreprocess
 
 
 # === Putting GTFS data in WORKDIR :
@@ -80,7 +80,7 @@ mkdir "$HLUW_OUTPUT_DIR"
 echo ""
 echo "Building preparatory data :"
 set -o xtrace
-"${BUILD_DIR}/bin/build-preparatory" \
+"${BUILD_DIR}/bin/bin-uwpreprocess" \
     "$INPUT_GTFS_DATA" \
     "$INPUT_OSM_FILE" \
     "$INPUT_POLYGON_FILE" \
