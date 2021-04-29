@@ -5,7 +5,9 @@
 #include "graph/graphtypes.h"
 #include "graph/walking_graph.h"
 #include "gtfs/gtfs_parsed_data.h"
-#include "gtfs/gtfs_geojson.h"
+#include "json/gtfs_serialization.h"
+#include "json/walking_graph_serialization.h"
+#include "json/polygon_serialization.h"
 
 int main(int argc, char** argv) {
     if (argc < 7) {
@@ -45,7 +47,7 @@ int main(int argc, char** argv) {
 
         std::cout << "Dumping GTFS as json" << std::endl;
         std::ofstream out_gtfs(output_dir + "gtfs.json");
-        uwpreprocess::to_stream(out_gtfs, gtfs_data);
+        uwpreprocess::json::serialize_gtfs(out_gtfs, gtfs_data);
 
         std::cout << "Dumping HL-UW stoptimes" << std::endl;
         std::ofstream out_stoptimes(hluw_output_dir + "stoptimes.txt");
@@ -59,15 +61,17 @@ int main(int argc, char** argv) {
     }
 
     // walking-graph :
+    std::cout << "Getting polygon" << std::endl;
+    uwpreprocess::BgPolygon polygon = uwpreprocess::json::unserialize_polygon(polygon_file);
     std::cout << "Building walking-graph" << std::endl;
-    uwpreprocess::WalkingGraph graph{osm_file, polygon_file, stops, walkspeed_km_per_hr};
+    uwpreprocess::WalkingGraph graph{osm_file, polygon, stops, walkspeed_km_per_hr};
 
     std::cout << "Dumping WalkingGraph for HL-UW" << std::endl;
-    std::ofstream out_graph(output_dir + "walking_graph.json");
-    graph.to_hluw_structures(hluw_output_dir);
+    uwpreprocess::json::serialize_walking_graph_hluw(graph, hluw_output_dir);
 
     std::cout << "Dumping WalkingGraph geojson" << std::endl;
-    graph.to_stream(out_graph);
+    std::ofstream out_graph(output_dir + "walking_graph.json");
+    uwpreprocess::json::serialize_walking_graph(graph, out_graph);
 
     std::cout << "All is OK" << std::endl;
 

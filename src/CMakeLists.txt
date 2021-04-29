@@ -33,6 +33,7 @@ include(cmake/cppgtfs.cmake)
 
 add_subdirectory(gtfs)
 add_subdirectory(graph)
+add_subdirectory(json)
 add_subdirectory(mains)
 
 include(cmake/download-bordeaux-data-gtfs.cmake)
