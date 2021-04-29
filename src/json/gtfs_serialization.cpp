@@ -206,7 +206,6 @@ GtfsParsedData unserialize_gtfs(istream& in) {
 }
 
 bool _check_serialization_idempotent(GtfsParsedData const& gtfs) {
-    // serializing in a temporary file :
     ostringstream oss;
     serialize_gtfs(oss, gtfs);
 

@@ -22,4 +22,6 @@ void serialize_walking_graph(WalkingGraph const&, std::ostream& out);
 WalkingGraph unserialize_walking_graph(std::istream& in);
 void serialize_walking_graph_hluw(WalkingGraph const&, std::string const& hluw_output_dir);  // FIXME : this should be in HL-UW repo
 
+bool _check_serialization_idempotent(WalkingGraph const&);
+
 }  // namespace uwpreprocess
