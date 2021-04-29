@@ -8,6 +8,6 @@ set(GTFSPARSING_SOURCES
     gtfs_parsed_data.cpp
 )
 
-add_library(gtfs_parsing STATIC "${GTFSPARSING_SOURCES}")
-target_include_directories(gtfs_parsing PRIVATE "${CPPGTFS_INCLUDE_DIR}")
-target_link_libraries(gtfs_parsing PRIVATE ad_cppgtfs)
+add_library(gtfs STATIC "${GTFSPARSING_SOURCES}")
+target_include_directories(gtfs PRIVATE "${CPPGTFS_INCLUDE_DIR}")
+target_link_libraries(gtfs PRIVATE ad_cppgtfs)
