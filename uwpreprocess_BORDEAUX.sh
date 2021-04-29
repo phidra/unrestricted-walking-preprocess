@@ -20,7 +20,7 @@ echo "To build from scratch :  rm -rf '$BUILD_DIR'"
 
 
 # === Preparing WORKDIR :
-WORKDIR="${this_script_parent}/PREPARED_DATA_BORDEAUX"
+WORKDIR="${this_script_parent}/UWPREPROCESSED_BORDEAUX"
 echo "Using WORKDIR = $WORKDIR"
 [ -e "$WORKDIR" ] && echo "ERROR : already existing workdir :  $WORKDIR" && exit 1
 INPUT_POLYGON_FILE="$WORKDIR/INPUT/bordeaux_polygon.geojson"
@@ -72,13 +72,13 @@ mv "$INPUT_GTFS_DATA/stop_times.txt" "$INPUT_GTFS_DATA/original_stop_times.txt"
     "$INPUT_GTFS_DATA/stops.txt" \
     "$INPUT_GTFS_DATA/stop_times.txt"
 
-# === building preparatory data :
+# === building uwpreprocessed data :
 OUTPUT_DIR="$WORKDIR/OUTPUT"
 mkdir "$OUTPUT_DIR"
 HLUW_OUTPUT_DIR="$OUTPUT_DIR/HLUW"
 mkdir "$HLUW_OUTPUT_DIR"
 echo ""
-echo "Building preparatory data :"
+echo "Building uwpreprocessed data :"
 set -o xtrace
 "${BUILD_DIR}/bin/bin-uwpreprocess" \
     "$INPUT_GTFS_DATA" \
@@ -91,4 +91,4 @@ set +o xtrace
 
 
 echo ""
-echo "PREPARED DATA are in directory : $OUTPUT_DIR"
+echo "UWPREPROCESSED DATA are in directory : $OUTPUT_DIR"
