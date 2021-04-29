@@ -23,7 +23,7 @@ struct UnreadablePolygonFileException : public std::exception {
     string msg;
 };
 
-static void assert_geojson_format(bool condition, string description) {
+static void assert_json_format(bool condition, string description) {
     if (!condition)
         throw IllFormattedPolygonException{description};
 }
@@ -58,40 +58,40 @@ static vector<pair<double, double>> parse_polygonfile(istream& polygonfile_strea
     rapidjson::Document doc;
     doc.ParseStream(stream_wrapper);
 
-    assert_geojson_format(doc.IsObject(), "doc is not an object");
-    assert_geojson_format(doc.HasMember("features"), "doc has no 'features'");
+    assert_json_format(doc.IsObject(), "doc is not an object");
+    assert_json_format(doc.HasMember("features"), "doc has no 'features'");
     auto& features = doc["features"];
 
     auto& feature = features[0];
-    assert_geojson_format(feature.IsObject(), "features is not an object");
-    assert_geojson_format(feature.HasMember("geometry"), "features has no 'geometry'");
+    assert_json_format(feature.IsObject(), "features is not an object");
+    assert_json_format(feature.HasMember("geometry"), "features has no 'geometry'");
 
     auto& geometry = feature["geometry"];
-    assert_geojson_format(geometry.IsObject(), "geometry is not an object");
-    assert_geojson_format(geometry.HasMember("type"), "geometry has no 'type'");
-    assert_geojson_format(geometry.HasMember("coordinates"), "geometry has no 'coordinates'");
+    assert_json_format(geometry.IsObject(), "geometry is not an object");
+    assert_json_format(geometry.HasMember("type"), "geometry has no 'type'");
+    assert_json_format(geometry.HasMember("coordinates"), "geometry has no 'coordinates'");
 
     auto& geom_type = geometry["type"];
-    assert_geojson_format(geom_type.IsString(), "type is not a string");
-    assert_geojson_format(string(geom_type.GetString()) == "Polygon", "type is not a 'Polygon'");
+    assert_json_format(geom_type.IsString(), "type is not a string");
+    assert_json_format(string(geom_type.GetString()) == "Polygon", "type is not a 'Polygon'");
 
     auto& coordinates = geometry["coordinates"];
-    assert_geojson_format(coordinates.IsArray(), "coordinates is not an Array");
+    assert_json_format(coordinates.IsArray(), "coordinates is not an Array");
 
     // it seems that the coordinates format is built to allow multiple polygon ?
     // anyway, we're only interested in the first one :
-    assert_geojson_format(coordinates.Size() == 1, "there are multiple polygons");
+    assert_json_format(coordinates.Size() == 1, "there are multiple polygons");
     auto& first_polygon_coordinates = coordinates[0];
-    assert_geojson_format(first_polygon_coordinates.IsArray(), "first polygon coords is not an Array");
+    assert_json_format(first_polygon_coordinates.IsArray(), "first polygon coords is not an Array");
 
     vector<pair<double, double>> points;
     for (auto& coordinate_pair : first_polygon_coordinates.GetArray()) {
-        assert_geojson_format(coordinate_pair.IsArray(), "coordinate_pair is not an array");
-        assert_geojson_format(coordinate_pair.Size() == 2, "coordinate_pair has not 2 elements");
+        assert_json_format(coordinate_pair.IsArray(), "coordinate_pair is not an array");
+        assert_json_format(coordinate_pair.Size() == 2, "coordinate_pair has not 2 elements");
         auto& lon = coordinate_pair[0];
         auto& lat = coordinate_pair[1];
-        assert_geojson_format(lon.IsDouble(), "lon is not a double");
-        assert_geojson_format(lat.IsDouble(), "lat is not a double");
+        assert_json_format(lon.IsDouble(), "lon is not a double");
+        assert_json_format(lat.IsDouble(), "lat is not a double");
         points.emplace_back(lon.GetDouble(), lat.GetDouble());
     }
     return points;

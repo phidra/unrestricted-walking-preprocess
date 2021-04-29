@@ -88,7 +88,7 @@ struct IllFormattedGtfsDataException : public exception {
     string msg;
 };
 
-static void assert_geojson_format(bool condition, string description) {
+static void assert_json_format(bool condition, string description) {
     if (!condition)
         throw IllFormattedGtfsDataException{description};
 }
@@ -98,17 +98,17 @@ GtfsParsedData unserialize_gtfs(istream& in) {
     rapidjson::Document doc;
     doc.ParseStream(stream_wrapper);
 
-    assert_geojson_format(doc.IsObject(), "doc is not an object");
-    assert_geojson_format(doc.HasMember("ranked_routes"), "doc has no 'ranked_routes'");
+    assert_json_format(doc.IsObject(), "doc is not an object");
+    assert_json_format(doc.HasMember("ranked_routes"), "doc has no 'ranked_routes'");
 
     // DESERIALIZATION ranked_routes :
     auto& ranked_routes_json = doc["ranked_routes"];
-    assert_geojson_format(ranked_routes_json.IsArray(), "ranked_routes is not an array");
+    assert_json_format(ranked_routes_json.IsArray(), "ranked_routes is not an array");
     vector<RouteLabel> ranked_routes;
     size_t route_rank = 0;
     unordered_map<RouteLabel, size_t> route_to_rank;
     for (auto ite = ranked_routes_json.Begin(); ite != ranked_routes_json.End(); ++ite, ++route_rank) {
-        assert_geojson_format(ite->IsString(), "label is not a string");
+        assert_json_format(ite->IsString(), "label is not a string");
         RouteLabel label{ite->GetString()};
         ranked_routes.emplace_back(label);
         route_to_rank[label] = route_rank;
@@ -116,21 +116,21 @@ GtfsParsedData unserialize_gtfs(istream& in) {
 
     // DESERIALIZATION ranked_stops :
     auto& ranked_stops_json = doc["ranked_stops"];
-    assert_geojson_format(ranked_stops_json.IsArray(), "ranked_stops is not an array");
+    assert_json_format(ranked_stops_json.IsArray(), "ranked_stops is not an array");
     vector<ParsedStop> ranked_stops;
     size_t stop_rank = 0;
     unordered_map<string, size_t> stopid_to_rank;
     for (auto ite = ranked_stops_json.Begin(); ite != ranked_stops_json.End(); ++ite, ++stop_rank) {
         auto& stop_json = *ite;
-        assert_geojson_format(stop_json.IsObject(), "stop is not an object");
-        assert_geojson_format(stop_json.HasMember("latitude"), "stop has no 'latitude'");
-        assert_geojson_format(stop_json.HasMember("longitude"), "stop has no 'longitude'");
-        assert_geojson_format(stop_json.HasMember("id"), "stop has no 'id'");
-        assert_geojson_format(stop_json.HasMember("name"), "stop has no 'name'");
-        assert_geojson_format(stop_json["latitude"].IsDouble(), "latitude is not a double");
-        assert_geojson_format(stop_json["longitude"].IsDouble(), "longitude is not a double");
-        assert_geojson_format(stop_json["id"].IsString(), "id is not a string");
-        assert_geojson_format(stop_json["name"].IsString(), "name is not a string");
+        assert_json_format(stop_json.IsObject(), "stop is not an object");
+        assert_json_format(stop_json.HasMember("latitude"), "stop has no 'latitude'");
+        assert_json_format(stop_json.HasMember("longitude"), "stop has no 'longitude'");
+        assert_json_format(stop_json.HasMember("id"), "stop has no 'id'");
+        assert_json_format(stop_json.HasMember("name"), "stop has no 'name'");
+        assert_json_format(stop_json["latitude"].IsDouble(), "latitude is not a double");
+        assert_json_format(stop_json["longitude"].IsDouble(), "longitude is not a double");
+        assert_json_format(stop_json["id"].IsString(), "id is not a string");
+        assert_json_format(stop_json["name"].IsString(), "name is not a string");
 
         ParsedStop stop{stop_json["id"].GetString(), stop_json["name"].GetString(), stop_json["latitude"].GetDouble(),
                         stop_json["longitude"].GetDouble()};
@@ -140,50 +140,50 @@ GtfsParsedData unserialize_gtfs(istream& in) {
 
     // DESERIALIZATION routes :
     auto& routes_json = doc["routes"];
-    assert_geojson_format(routes_json.IsArray(), "routes is not an array");
+    assert_json_format(routes_json.IsArray(), "routes is not an array");
     map<RouteLabel, ParsedRoute> routes;
     for (auto ite = routes_json.Begin(); ite != routes_json.End(); ++ite) {
-        assert_geojson_format(ite->IsArray(), "routepair-iterator is not an array");
-        assert_geojson_format(ite->Size() == 2, "routepair should have 2 elements");
+        assert_json_format(ite->IsArray(), "routepair-iterator is not an array");
+        assert_json_format(ite->Size() == 2, "routepair should have 2 elements");
 
         // left-element of the route-pair = key of the map = RouteLabel :
         auto& label_json = (*ite)[0];
-        assert_geojson_format(label_json.IsString(), "label is not a string");
+        assert_json_format(label_json.IsString(), "label is not a string");
         RouteLabel label{label_json.GetString()};
 
         // right-element of the route-pair = value of the map = the trips of the ParsedRoute :
         auto& trips_json = (*ite)[1];
-        assert_geojson_format(trips_json.IsArray(), "trips is not an array");
+        assert_json_format(trips_json.IsArray(), "trips is not an array");
 
         ParsedRoute::Trips trips;
         for (auto ite_bis = trips_json.Begin(); ite_bis != trips_json.End(); ++ite_bis) {
-            assert_geojson_format(ite_bis->IsArray(), "trippair-iterator is not an array");
-            assert_geojson_format(ite_bis->Size() == 2, "trippair should have 2 elements");
+            assert_json_format(ite_bis->IsArray(), "trippair-iterator is not an array");
+            assert_json_format(ite_bis->Size() == 2, "trippair should have 2 elements");
 
             // left-element of the trip-pair = key of the submap = OrderableTripId :
             auto& orderable_trip_id_json = (*ite_bis)[0];
-            assert_geojson_format(orderable_trip_id_json.IsArray(), "orderabletripid is not an array");
-            assert_geojson_format(orderable_trip_id_json.Size() == 2, "orderabletripid should have 2 elements");
+            assert_json_format(orderable_trip_id_json.IsArray(), "orderabletripid is not an array");
+            assert_json_format(orderable_trip_id_json.Size() == 2, "orderabletripid should have 2 elements");
 
             auto& trip_event_time_json = orderable_trip_id_json[0];
-            assert_geojson_format(trip_event_time_json.IsInt(), "trip_event_time should be an int");
+            assert_json_format(trip_event_time_json.IsInt(), "trip_event_time should be an int");
             int trip_event_time = trip_event_time_json.GetInt();
 
             auto& trip_id_json = orderable_trip_id_json[1];
-            assert_geojson_format(trip_id_json.IsString(), "trip_id should be a string");
+            assert_json_format(trip_id_json.IsString(), "trip_id should be a string");
             string trip_id = trip_id_json.GetString();
 
             OrderableTripId otid{trip_event_time, trip_id};
 
             // right-element of the trip-pair = value of the submap = the vector of stop_events
             auto& stop_events_json = (*ite_bis)[1];
-            assert_geojson_format(stop_events_json.IsArray(), "stopevents is not an array");
+            assert_json_format(stop_events_json.IsArray(), "stopevents is not an array");
             vector<ParsedRoute::StopEvent> stop_events;
             for (auto ite_ter = stop_events_json.Begin(); ite_ter != stop_events_json.End(); ++ite_ter) {
-                assert_geojson_format(ite_ter->IsArray(), "eventpair-iterator is not an array");
-                assert_geojson_format(ite_ter->Size() == 2, "eventpair should have 2 elements");
-                assert_geojson_format((*ite_ter)[0].IsInt(), "event-left should be an int");
-                assert_geojson_format((*ite_ter)[1].IsInt(), "event-right should be an int");
+                assert_json_format(ite_ter->IsArray(), "eventpair-iterator is not an array");
+                assert_json_format(ite_ter->Size() == 2, "eventpair should have 2 elements");
+                assert_json_format((*ite_ter)[0].IsInt(), "event-left should be an int");
+                assert_json_format((*ite_ter)[1].IsInt(), "event-right should be an int");
                 int arrival = (*ite_ter)[0].GetInt();
                 int departure = (*ite_ter)[1].GetInt();
                 stop_events.emplace_back(arrival, departure);
