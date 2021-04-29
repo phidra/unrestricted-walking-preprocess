@@ -211,7 +211,7 @@ vector<Edge> parse_geojson_graph(istream& in) {
     return edges;
 }
 
-void dump_geojson_line(std::ostream& out, BgPolygon::ring_type const& ring) {
+void dump_geojson_line(ostream& out, BgPolygon::ring_type const& ring) {
     rapidjson::Document doc(rapidjson::kObjectType);
     rapidjson::Document::AllocatorType& a = doc.GetAllocator();
     doc.AddMember("type", "FeatureCollection", a);
@@ -253,22 +253,25 @@ void dump_geojson_line(std::ostream& out, BgPolygon::ring_type const& ring) {
     rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(out_wrapper);
     doc.Accept(writer);
 
-    out << std::endl;
+    out << endl;
 }
 
 
-void serialize_walking_graph(WalkingGraph const& graph, std::ostream& out) {
+void serialize_walking_graph(WalkingGraph const& graph, ostream& out) {
     dump_geojson_graph(out, graph.edges_with_stops_bidirectional, false);
 }
 
 
-WalkingGraph unserialize_walking_graph(std::istream& in) {
+WalkingGraph unserialize_walking_graph(istream& in) {
     WalkingGraph deserialized;
     deserialized.edges_with_stops_bidirectional = parse_geojson_graph(in);
 
-    map<size_t, vector<size_t>> node_to_out_edges;
     size_t edge_rank = 0;
     for (auto& edge : deserialized.edges_with_stops_bidirectional) {
+        auto desired_size = edge.node_from.get_rank() + 1;
+        if (deserialized.node_to_out_edges.size() < desired_size) {
+            deserialized.node_to_out_edges.resize(desired_size);
+        }
         deserialized.node_to_out_edges[edge.node_from.get_rank()].push_back(edge_rank++);
     }
     deserialized.check_structures_consistency();
@@ -276,17 +279,17 @@ WalkingGraph unserialize_walking_graph(std::istream& in) {
 }
 
 
-void serialize_walking_graph_hluw(WalkingGraph const& graph, std::string const& hluw_output_dir) {
+void serialize_walking_graph_hluw(WalkingGraph const& graph, string const& hluw_output_dir) {
     // this functions dumps the structures used by HL-UW.
     // FIXME : it should rather be in HL-UW repository (but for now, it is easier to have it there).
 
     // walkspeed :
-    std::ofstream out_walkspeed(hluw_output_dir + "walkspeed_km_per_hour.txt");
+    ofstream out_walkspeed(hluw_output_dir + "walkspeed_km_per_hour.txt");
     out_walkspeed << graph.walkspeed_km_per_hour << "\n";
 
     // edges :
-    std::ofstream out_edges(hluw_output_dir + "graph.edgefile");
-    out_edges << std::fixed << std::setprecision(0);  // displays integer weight
+    ofstream out_edges(hluw_output_dir + "graph.edgefile");
+    out_edges << fixed << setprecision(0);  // displays integer weight
     for (auto& edge : graph.edges_with_stops_bidirectional) {
         out_edges << edge.node_from.id << " ";
         out_edges << edge.node_to.id << " ";
@@ -294,14 +297,27 @@ void serialize_walking_graph_hluw(WalkingGraph const& graph, std::string const& 
     }
 
     // nodes :
-    std::ofstream out_nodes(hluw_output_dir + "stops.nodes");
+    ofstream out_nodes(hluw_output_dir + "stops.nodes");
     for (auto& stop : graph.stops_with_closest_node) {
         out_nodes << stop.id << "\n";
     }
 
     // stops geojson (used by the HL-UW server) :
-    std::ofstream out_stops(hluw_output_dir + "stops.geojson");
+    ofstream out_stops(hluw_output_dir + "stops.geojson");
     dump_geojson_stops(out_stops, graph.stops_with_closest_node);
+}
+
+bool _check_serialization_idempotent(WalkingGraph const& graph) {
+    // FIXME : this is not a full idempotency, as only edges are (un)serialized for now.
+    ostringstream oss;
+    serialize_walking_graph(graph, oss);
+
+    istringstream iss(oss.str());
+    WalkingGraph deserialized = unserialize_walking_graph(iss);
+
+    bool are_edges_equal = graph.edges_with_stops_bidirectional == deserialized.edges_with_stops_bidirectional;
+    bool are_node_to_out_edges_equal = graph.node_to_out_edges == deserialized.node_to_out_edges;
+    return are_edges_equal && are_node_to_out_edges_equal;
 }
 
 

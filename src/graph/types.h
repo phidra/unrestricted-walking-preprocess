@@ -22,6 +22,8 @@ struct Stop {
     double lat;
     StopId id;
     std::string name;
+
+    bool operator==(Stop const& x) const { return lat == x.lat && lon == x.lon && id == x.id && name == x.name; }
 };
 
 struct StopWithClosestNode : public Stop {
@@ -32,6 +34,8 @@ struct StopWithClosestNode : public Stop {
 
     std::string closest_node_id;
     std::string closest_node_url;
+
+    bool operator==(StopWithClosestNode const& x) const { return static_cast<Stop const&>(*this) == static_cast<Stop const&>(x) && closest_node_id == x.closest_node_id && closest_node_url == x.closest_node_url; }
 };
 
 }  // namespace uwpreprocess

@@ -58,6 +58,11 @@ int main(int argc, char** argv) {
         for (auto& stop : gtfs_data.ranked_stops) {
             stops.emplace_back(stop.longitude, stop.latitude, stop.id, stop.name);
         }
+
+        if (!uwpreprocess::json::_check_serialization_idempotent(gtfs_data)) {
+            std::cout << "ERROR - gtfs serialization is not idempotent !" << std::endl;
+            return 1;
+        }
     }
 
     // walking-graph :
@@ -72,6 +77,11 @@ int main(int argc, char** argv) {
     std::cout << "Dumping WalkingGraph geojson" << std::endl;
     std::ofstream out_graph(output_dir + "walking_graph.json");
     uwpreprocess::json::serialize_walking_graph(graph, out_graph);
+
+    if (!uwpreprocess::json::_check_serialization_idempotent(graph)) {
+        std::cout << "ERROR - graph serialization is not idempotent !" << std::endl;
+        return 1;
+    }
 
     std::cout << "All is OK" << std::endl;
 
