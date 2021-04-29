@@ -143,7 +143,7 @@ struct IllFormattedWalkingGraphException : public exception {
     string msg;
 };
 
-static void assert_geojson_format(bool condition, string description) {
+static void assert_json_format(bool condition, string description) {
     if (!condition)
         throw IllFormattedWalkingGraphException{description};
 }
@@ -153,49 +153,49 @@ vector<Edge> parse_geojson_graph(istream& in) {
     rapidjson::Document doc;
     doc.ParseStream(stream_wrapper);
 
-    assert_geojson_format(doc.IsObject(), "doc is not an object");
-    assert_geojson_format(doc.HasMember("features"), "doc has no 'features'");
+    assert_json_format(doc.IsObject(), "doc is not an object");
+    assert_json_format(doc.HasMember("features"), "doc has no 'features'");
     auto& features = doc["features"];
 
-    assert_geojson_format(features.IsArray(), "features is not an array");
+    assert_json_format(features.IsArray(), "features is not an array");
 
     vector<Edge> edges;
     for (auto ite = features.Begin(); ite != features.End(); ++ite) {
         auto& feature = *ite;
-        assert_geojson_format(feature.IsObject(), "features is not an object");
-        assert_geojson_format(feature.HasMember("geometry"), "features has no 'geometry'");
-        assert_geojson_format(feature.HasMember("type"), "features has no 'type'");
-        assert_geojson_format(feature.HasMember("properties"), "features has no 'properties'");
+        assert_json_format(feature.IsObject(), "features is not an object");
+        assert_json_format(feature.HasMember("geometry"), "features has no 'geometry'");
+        assert_json_format(feature.HasMember("type"), "features has no 'type'");
+        assert_json_format(feature.HasMember("properties"), "features has no 'properties'");
 
         auto& properties = feature["properties"];
-        assert_geojson_format(properties.IsObject(), "properties is not an object");
-        assert_geojson_format(properties.HasMember("node_from"), "properties has no 'node_from'");
-        assert_geojson_format(properties.HasMember("node_from_rank"), "properties has no 'node_from_rank'");
-        assert_geojson_format(properties.HasMember("node_to"), "properties has no 'node_to'");
-        assert_geojson_format(properties.HasMember("node_to_rank"), "properties has no 'node_to_rank'");
-        assert_geojson_format(properties.HasMember("weight"), "properties has no 'weight'");
-        assert_geojson_format(properties.HasMember("length_meters"), "properties has no 'length_meters'");
+        assert_json_format(properties.IsObject(), "properties is not an object");
+        assert_json_format(properties.HasMember("node_from"), "properties has no 'node_from'");
+        assert_json_format(properties.HasMember("node_from_rank"), "properties has no 'node_from_rank'");
+        assert_json_format(properties.HasMember("node_to"), "properties has no 'node_to'");
+        assert_json_format(properties.HasMember("node_to_rank"), "properties has no 'node_to_rank'");
+        assert_json_format(properties.HasMember("weight"), "properties has no 'weight'");
+        assert_json_format(properties.HasMember("length_meters"), "properties has no 'length_meters'");
 
         auto& geometry = feature["geometry"];
-        assert_geojson_format(geometry.IsObject(), "geometry is not an object");
-        assert_geojson_format(geometry.HasMember("type"), "geometry has no 'type'");
-        assert_geojson_format(geometry.HasMember("coordinates"), "geometry has no 'coordinates'");
+        assert_json_format(geometry.IsObject(), "geometry is not an object");
+        assert_json_format(geometry.HasMember("type"), "geometry has no 'type'");
+        assert_json_format(geometry.HasMember("coordinates"), "geometry has no 'coordinates'");
 
         auto& geom_type = geometry["type"];
-        assert_geojson_format(geom_type.IsString(), "type is not a string");
-        assert_geojson_format(string(geom_type.GetString()) == "LineString", "type is not a 'LineString'");
+        assert_json_format(geom_type.IsString(), "type is not a string");
+        assert_json_format(string(geom_type.GetString()) == "LineString", "type is not a 'LineString'");
 
         auto& coordinates = geometry["coordinates"];
-        assert_geojson_format(coordinates.IsArray(), "coordinates is not an Array");
+        assert_json_format(coordinates.IsArray(), "coordinates is not an Array");
 
         Polyline polyline;
         for (auto& coordinate_pair : coordinates.GetArray()) {
-            assert_geojson_format(coordinate_pair.IsArray(), "coordinate_pair is not an array");
-            assert_geojson_format(coordinate_pair.Size() == 2, "coordinate_pair has not 2 elements");
+            assert_json_format(coordinate_pair.IsArray(), "coordinate_pair is not an array");
+            assert_json_format(coordinate_pair.Size() == 2, "coordinate_pair has not 2 elements");
             auto& lon = coordinate_pair[0];
             auto& lat = coordinate_pair[1];
-            assert_geojson_format(lon.IsDouble(), "lon is not a double");
-            assert_geojson_format(lat.IsDouble(), "lat is not a double");
+            assert_json_format(lon.IsDouble(), "lon is not a double");
+            assert_json_format(lat.IsDouble(), "lat is not a double");
             polyline.emplace_back(lon.GetDouble(), lat.GetDouble());
         }
 
